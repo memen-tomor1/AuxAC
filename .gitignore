@@ -1,0 +1,12 @@
+# 构建产物
+build/
+.cache/
+.build/
+
+# Xcode 的每用户状态（工程文件本身要提交，这些不要）
+Xcode/AuxACWidget.xcodeproj/project.xcworkspace/xcuserdata/
+Xcode/AuxACWidget.xcodeproj/xcuserdata/
+Xcode/AuxACWidget.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# macOS
+.DS_Store

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  小组件扩展的 entitlements。
+
+  为什么必须有 app-sandbox：WidgetKit 扩展由系统的 chronod 在受限宿主里启动，
+  没有沙箱的扩展根本不会被托管——表现就是小组件库里压根搜不到它，连报错都没有。
+  对照过本机三个第三方小组件（AirBattery / Dynamic Lyrics / KanaOrigin），
+  三个全部带 `com.apple.security.app-sandbox = true`。
+
+  注意主 App **不需要**沙箱（AirBattery 的主 App 也没沙箱），只有扩展需要。
+
+  沙箱一开，扩展的家目录就变成自己的容器，读不到真实的
+  ~/Library/Application Support/AuxAC/。所以要用 temporary-exception 把它豁免出来。
+  这里刻意用 home-relative 而不是 absolute-path：后者要把 /Users/xxx 写死进签名，
+  换台机器或换个用户名又要重签。
+-->
+<plist version="1.0">
+<dict>
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+
+    <!-- 中号小组件那个开关机按钮要真的打云 API -->
+    <key>com.apple.security.network.client</key>
+    <true/>
+
+    <!-- 只放开这一个目录：widget.json（状态快照）和 session.json（token）都在这儿，
+         都是主 App 用 0600 写的。只读就够——小组件从不写这两个文件。 -->
+    <key>com.apple.security.temporary-exception.files.home-relative-path.read-only</key>
+    <array>
+        <string>/Library/Application Support/AuxAC/</string>
+    </array>
+</dict>
+</plist>
