@@ -53,7 +53,11 @@ func auxSharedDirectory() -> URL {
 /// 字段会随服务端变化（我们连室温字段都测出来「不存在」过），
 /// 用 `[String: Any]` 加候选键名逐个取值，比写一堆 `Decodable` 更能扛住字段改名——
 /// 这也正是主 App 里 `ACState` 的做法，两边保持一致。
-struct ACStatus {
+/// ⚠️ 必须 `Codable`：WidgetKit 会把 timeline entry 归档到 chronod 的 store 里，
+/// 不能编码的 entry 会让 store 报 `Encountered missing entry` / `Marking variant
+/// removed from store`，于是桌面活跃时小组件退化成「灰条 + 方块」占位骨架
+/// （图标变方框、数字文字全不见）。加 Codable 前就是这个症状。
+struct ACStatus: Codable {
     var state: String = "empty"      // ok / empty / loggedOut
     var alias: String = "奥克斯空调"
     var did: String = ""
@@ -337,7 +341,7 @@ struct CycleModeIntent: AppIntent {
 
 // MARK: - 时间线
 
-struct AuxACEntry: TimelineEntry {
+struct AuxACEntry: TimelineEntry, Codable {
     let date: Date
     let status: ACStatus
 }

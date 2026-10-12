@@ -207,6 +207,14 @@ open build/AuxAC.app
   但需要你先登录过。
 - 小组件要求 **macOS 14+**（交互按钮和 `containerBackground` 都是 14 才有的 API）；
   菜单栏 App 本体仍然能在 macOS 13 上跑。
+- ⚠️ **`ACStatus` 和 `AuxACEntry` 必须 `Codable`。** WidgetKit 会把时间线条目归档进
+  chronod 的 store，不能编码的条目会让 store 报 `Encountered missing entry` /
+  `Marking variant removed from store`，于是**桌面活跃时**小组件退化成「灰条 + 方块」的
+  占位骨架——图标变方框、温度和文字全不见（而某个 App 在前台时它却显示正常，
+  因为那是现场渲染）。查这个坑的命令：
+  ```bash
+  log show --last 5m --info --debug --predicate 'process == "chronod"' | grep -i auxac
+  ```
 - 重新 `./build.sh` 或把 App 换个目录之后，已经拖到桌面上的小组件可能需要删掉重加一次
   （系统记的是扩展的注册信息，路径变了要重新认）。
 
